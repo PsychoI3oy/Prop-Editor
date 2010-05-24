@@ -1,0 +1,48 @@
+PropEditor program 
+
+Running the program: 
+
+
+Main screen: 
+Clicking 'Open File' button opens a [text box] file dialog, defaulting to the sdcard); enter the name of a build.prop type file on the sdcard. (cp /system/build.prop /sdcard/build.prop first)
+	Opening anything other than a readable *.prop file (based on extension only) will result in an error. 
+
+
+Editor screen: 
+Clicking on a property will give a Suggestion list of values for the clicked property; the suggestion file is less sparse at this time but many properties have only one suggestion. 
+Clicking menu->Add will give a Suggestion screen of new properties to add to the file (all property names are suggested, duplicating an existing property wil overwrite). 
+Pressing back will return to the Main screen, abandoning changes.
+Clicking save saves the file under its current name, saveas opens the filename input to save. 
+	there is no name checking on the save (so you can saveas build.prop.bak). 
+
+Suggestion list: 
+Pressing the back button  will return to the Editor screen; 
+Clicking a suggested VALUE will change the selected entry and return to the Editor screen; Selecting "Manual entry" will pop up a manual entry dialog.
+Clicking a suggested NAME (from Add in editor) will suggest values per above for the new property. 
+
+
+Merge: 
+With an existing build.prop open, you can 'merge' another build.prop file to overwrite/add the settings in it. This should make it easy for users with a list of common changes to modify their build.prop 
+after flashing a new CM (or other) update. 
+
+Example: 
+
+have /sdcard/mergeme.prop with
+
+ro.product.model=T-Mobile G1
+ro.product.name=opal
+
+to make T-Mobile apps work (cm5 default for model being HTC Dream) and Facebook Sync work
+
+cp /system/build.prop /sdcard
+
+open /sdcard/build.trout.prop with PropEditor
+menu->merge, pick /sdcard/mergeme.prop
+menu->save
+
+*visually verify it worked, this is still experimental*
+
+[remount /system readwrite]
+cp /sdcard/build.prop /system/build.prop
+
+

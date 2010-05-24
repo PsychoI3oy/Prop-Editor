@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/add"
+		android:title="Add property" />
+	<item android:id="@+id/merge"
+		android:title="Merge files" />
+	<item android:id="@+id/save_as"
+		android:title="Save As" /> 
+	<item android:id="@+id/save"
+		android:title="Save" />
+
+</menu>
