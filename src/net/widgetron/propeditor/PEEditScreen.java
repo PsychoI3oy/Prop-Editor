@@ -45,29 +45,14 @@ public class PEEditScreen extends Activity {
 		//Next extract the values using the key as
 		this.filename  = bundle.getString("fn");
 		//open suggestionfile
-		Log.d(TAG, "filename inside " + this.filename);
-		Log.d(TAG, "before sugfile");
-  		InputStream is = this.getResources().openRawResource(R.raw.suggestionfile);
+		InputStream is = this.getResources().openRawResource(R.raw.suggestionfile);
 		BufferedReader sFile= new BufferedReader(new InputStreamReader(is));
-		Log.d(TAG, "after sugfile");  
-	/*	is = this.getResources().openRawResource(R.raw.propfile);
-		BufferedReader pFile= new BufferedReader(new InputStreamReader(is)); */
-	
-		
-		Log.d(TAG, "before propfile");
+	  
 		BufferedReader pFile;
 		try {
-			Log.d(TAG, "inside propfile try");
-			FileInputStream fis = new FileInputStream(this.filename);
-			Log.d(TAG, "after propfile fis");
-			InputStreamReader isr = new InputStreamReader(fis);
-			Log.d(TAG, "after propfile isr");
-			pFile = new BufferedReader(isr);
-			Log.d(TAG, "after propfile buffered reader");
-			Log.d(TAG, "after pfile br/isr/ofi");
+			pFile = new BufferedReader(new InputStreamReader(new FileInputStream(this.filename)));
 			PEEditScreen.pE = new PropEditor(pFile, sFile); 
-			Log.d(TAG, "after new prop editor");
-		} catch (FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 			Toast.makeText(getApplicationContext(), "Failed to open PropFile", Toast.LENGTH_SHORT).show();
 			Log.e(TAG, "Failed to open PropFile", e);
 			this.finish();	
@@ -162,13 +147,14 @@ public class PEEditScreen extends Activity {
 		    switch(id) {
 		    case MANUAL_DIALOG:
 		    	final EditText input = new EditText(PEEditScreen.this);
-		    	input.setText("", TextView.BufferType.EDITABLE);
 		    	dialog = new 	AlertDialog.Builder(PEEditScreen.this).setTitle("Custom entry").setView(
 						input).setPositiveButton(android.R.string.ok , new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int whichButton) {
 								selectedEdit = input.getText().toString();
-								input.setText("", TextView.BufferType.EDITABLE);
+								Log.d(TAG, "154 selectededit "+selectedEdit);
 								modifyProps();
+								input.setText("", TextView.BufferType.EDITABLE);
+								
 							}
 						}
 						).setNegativeButton(android.R.string.cancel , new DialogInterface.OnClickListener() {
@@ -184,7 +170,6 @@ public class PEEditScreen extends Activity {
 	protected void onPrepareDialog(int id, Dialog dialog){
 	    switch(id) {
 	    case MANUAL_DIALOG:
-
 	    	dialog.setTitle("Manual entry for " + editMode + thingString);
 	        break;
 	    default:
@@ -194,7 +179,7 @@ public class PEEditScreen extends Activity {
 /// suggestion screen alert dialog list
 	
   	public void suggestionScreen(String suggestFor, String edMode){
-  		//android.util.Log.d(TAG, "begin suggestionScreen");
+  		android.util.Log.d(TAG, "181 begin suggestionScreen sugfor:" + suggestFor + " edmode:" + edMode);
 		editMode = edMode;
 		//begin suggestion screen
 		
@@ -215,7 +200,7 @@ public class PEEditScreen extends Activity {
 		builder.setItems(sugFullList, new SuggestionHandler());
 		AlertDialog alert = builder.create();
 		alert.show();
-		android.util.Log.d(TAG, "end suggestionScreen");
+		android.util.Log.d(TAG, "202 end suggestionScreen");
 	}
   	
   	public void saveAs() {
@@ -250,33 +235,35 @@ public class PEEditScreen extends Activity {
 		Toast.makeText(getApplicationContext(), "PropFile saved", Toast.LENGTH_SHORT).show();
 	}
   	void modifyProps (){
-		android.util.Log.d(TAG, "modifying props with "  + selectedEdit);
+		android.util.Log.d(TAG, "237 modifying props with "  + selectedEdit);
 		if (!(selectedEdit == null)){ 
+			android.util.Log.d(TAG, "240 modprops  with " + editMode + " " + selectedEdit);
 			if(editMode.equals("Prop")){
+				android.util.Log.d(TAG, "242 modprops  with " + editMode + " " + selectedEdit);
 				currProp = selectedEdit;
 				suggestionScreen(currProp, "Value");
 			}else{
+				android.util.Log.d(TAG, "246 modprops  with " + editMode + " " + selectedEdit);
 				if (pE.getPropFile().modProp(currProp, selectedEdit)){
-					android.util.Log.d(TAG, "write succeeded with " + currProp + "="+ selectedEdit);
+					android.util.Log.d(TAG, "248 write succeeded with " + currProp + "=" + selectedEdit);
 					onResume();
+			
 				}else{
 					Toast.makeText(getApplicationContext(), "Illegal character in property name/value.", Toast.LENGTH_SHORT).show();
-				}
+				}	
 				currProp = null;
-		  		jlSugtitle = null;
-		  		thingString = null;
-		  		editMode = null;
-		  		selectedEdit = null;
+			  	jlSugtitle = null;
+			  	thingString = null;
+			  	editMode = null;
+			  	selectedEdit = null;
 			}
 		}
-		android.util.Log.d(TAG, "after manualEntry with " + editMode + selectedEdit);
+		android.util.Log.d(TAG, "261 after modprops  with " + editMode + selectedEdit);
 	}
 
 	void addProp () {
 			suggestionScreen("","Prop");
 	}
-	
-	
 	
 	void mergeFiles() {
 		CharSequence message = "Enter path of file to merge";
@@ -319,10 +306,6 @@ public class PEEditScreen extends Activity {
 		
 		
 	}
-	
-	
-	
-	
 	class ModHandler implements OnItemClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view,int position, long id)  {
@@ -335,9 +318,7 @@ public class PEEditScreen extends Activity {
 	class SuggestionHandler implements DialogInterface.OnClickListener{
 		@Override
 		public void onClick(DialogInterface view, int selected) {
-			android.util.Log.d(TAG, "begin suggestionHandler");
-
-	
+			android.util.Log.d(TAG, "321 begin suggestionHandler");
 			String selVal = sugFullList[selected];
 			if (currProp == null){
 				thingString = "";
@@ -345,14 +326,16 @@ public class PEEditScreen extends Activity {
 				thingString = " for " + currProp;
 			}
 			if( selVal.equals("Manual Entry")){
-				android.util.Log.d(TAG, "calling manualEntry with " + editMode + thingString);
+				android.util.Log.d(TAG, "329 calling manualEntry with " + editMode + thingString);
 	//			CharSequence message = "Manual entry for " + editMode + thingString;
 				showDialog(MANUAL_DIALOG);
 			}else{
+				android.util.Log.d(TAG, "333 middle of suggestionScreen non-manual; selectedEdit = " + selVal);
 				selectedEdit = selVal;
-			}
-			android.util.Log.d(TAG, "middle of suggestionScreen; selectedEdit =" + selectedEdit);
 				modifyProps();
+			}
+			android.util.Log.d(TAG, "336 end of suggestionScreen; selectedEdit = " + selectedEdit);
+			
 		}
 	}
 } 
