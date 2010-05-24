@@ -46,3 +46,5 @@ menu->save
 cp /sdcard/build.prop /system/build.prop
 
 
+
+you can download a compiled .apk version from the 'homepage' above; 'unknown sources' has to be checked, use astro or similar to install from sdcard. 
