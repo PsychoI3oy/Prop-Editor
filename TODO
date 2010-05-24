@@ -1,26 +1,14 @@
-<<<<<<< HEAD
 make file opening work - DONE
 make file saving work - DONE
 make menus work - DONE
-=======
-make file opening work
-make file saving work
-make menus work
->>>>>>> 034c5e1baa5c717dad2eea99df12cbf7bc42c87d
+
 clean debug log messages
 
 fix messages to be pulled from strings.xml for better i18n
 
 put suggestion file in xml
 
-<<<<<<< HEAD
 Features:
 make backups
 remount /system rw
 merge propfiles - DONE
-=======
-Features: 
-	make backups
-	remount /system rw
-	merge propfiles
->>>>>>> 034c5e1baa5c717dad2eea99df12cbf7bc42c87d
