@@ -52,7 +52,7 @@ public class PEEditScreen extends Activity {
 		try {
 			pFile = new BufferedReader(new InputStreamReader(new FileInputStream(this.filename)));
 			PEEditScreen.pE = new PropEditor(pFile, sFile); 
-			} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			Toast.makeText(getApplicationContext(), "Failed to open PropFile", Toast.LENGTH_SHORT).show();
 			Log.e(TAG, "Failed to open PropFile", e);
 			this.finish();	
@@ -60,15 +60,11 @@ public class PEEditScreen extends Activity {
 	} 
 	
   	public void onResume(){
-  		super.onResume();
-  		Log.d(TAG, "resumed editor");
-  		
+  		super.onResume();  		
   		String propListArr[] = pE.getPropFile().getAllProps();
 		propList.setAdapter(new ArrayAdapter<String>(this, R.layout.mylist , propListArr));
 		propList.setTextFilterEnabled(true);
 		propList.setOnItemClickListener(new ModHandler());
-
-		Log.d(TAG, "ended editor onResume");
   	}
   	
 	/*
@@ -151,7 +147,6 @@ public class PEEditScreen extends Activity {
 						input).setPositiveButton(android.R.string.ok , new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int whichButton) {
 								selectedEdit = input.getText().toString();
-								Log.d(TAG, "154 selectededit "+selectedEdit);
 								modifyProps();
 								input.setText("", TextView.BufferType.EDITABLE);
 								
@@ -179,7 +174,6 @@ public class PEEditScreen extends Activity {
 /// suggestion screen alert dialog list
 	
   	public void suggestionScreen(String suggestFor, String edMode){
-  		android.util.Log.d(TAG, "181 begin suggestionScreen sugfor:" + suggestFor + " edmode:" + edMode);
 		editMode = edMode;
 		//begin suggestion screen
 		
@@ -200,7 +194,6 @@ public class PEEditScreen extends Activity {
 		builder.setItems(sugFullList, new SuggestionHandler());
 		AlertDialog alert = builder.create();
 		alert.show();
-		android.util.Log.d(TAG, "202 end suggestionScreen");
 	}
   	
   	public void saveAs() {
@@ -211,8 +204,6 @@ public class PEEditScreen extends Activity {
 				input).setPositiveButton(android.R.string.ok , new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						String pFileName = input.getText().toString();
-
-						android.util.Log.d(TAG, "saveas with " + pFileName);
 						try{
 							if (! pE.getPropFile().saveFile(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pFileName))))  ){
 								android.util.Log.d(TAG, "savefile returned false ");
@@ -235,17 +226,12 @@ public class PEEditScreen extends Activity {
 		Toast.makeText(getApplicationContext(), "PropFile saved", Toast.LENGTH_SHORT).show();
 	}
   	void modifyProps (){
-		android.util.Log.d(TAG, "237 modifying props with "  + selectedEdit);
 		if (!(selectedEdit == null)){ 
-			android.util.Log.d(TAG, "240 modprops  with " + editMode + " " + selectedEdit);
 			if(editMode.equals("Prop")){
-				android.util.Log.d(TAG, "242 modprops  with " + editMode + " " + selectedEdit);
 				currProp = selectedEdit;
 				suggestionScreen(currProp, "Value");
 			}else{
-				android.util.Log.d(TAG, "246 modprops  with " + editMode + " " + selectedEdit);
 				if (pE.getPropFile().modProp(currProp, selectedEdit)){
-					android.util.Log.d(TAG, "248 write succeeded with " + currProp + "=" + selectedEdit);
 					onResume();
 			
 				}else{
@@ -258,7 +244,6 @@ public class PEEditScreen extends Activity {
 			  	selectedEdit = null;
 			}
 		}
-		android.util.Log.d(TAG, "261 after modprops  with " + editMode + selectedEdit);
 	}
 
 	void addProp () {
@@ -286,7 +271,7 @@ public class PEEditScreen extends Activity {
 								}
 								mergeWait.dismiss();
 								onResume();
-								Toast.makeText(getApplicationContext(), "Changes merged, look over them to make sure they're correct and don't forget to save", Toast.LENGTH_SHORT).show();
+								Toast.makeText(getApplicationContext(), "Changes merged, look over them to make sure they're correct and don't forget to save", Toast.LENGTH_LONG).show();
 							}catch(Exception e){
 								mergeWait.dismiss();
 								android.util.Log.d(TAG, "OHSHI--", e);
@@ -318,7 +303,6 @@ public class PEEditScreen extends Activity {
 	class SuggestionHandler implements DialogInterface.OnClickListener{
 		@Override
 		public void onClick(DialogInterface view, int selected) {
-			android.util.Log.d(TAG, "321 begin suggestionHandler");
 			String selVal = sugFullList[selected];
 			if (currProp == null){
 				thingString = "";
@@ -326,16 +310,11 @@ public class PEEditScreen extends Activity {
 				thingString = " for " + currProp;
 			}
 			if( selVal.equals("Manual Entry")){
-				android.util.Log.d(TAG, "329 calling manualEntry with " + editMode + thingString);
-	//			CharSequence message = "Manual entry for " + editMode + thingString;
 				showDialog(MANUAL_DIALOG);
 			}else{
-				android.util.Log.d(TAG, "333 middle of suggestionScreen non-manual; selectedEdit = " + selVal);
 				selectedEdit = selVal;
 				modifyProps();
-			}
-			android.util.Log.d(TAG, "336 end of suggestionScreen; selectedEdit = " + selectedEdit);
-			
+			}			
 		}
 	}
 } 

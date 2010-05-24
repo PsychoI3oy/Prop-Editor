@@ -49,7 +49,6 @@ public class PEMainScreen extends Activity implements OnClickListener {
 								Bundle bundle = new Bundle();
 								//Add the parameters to bundle as
 								bundle.putString("fn",pFileName);
-								// Log.d(TAG, "filename passed in" + pFileName);
 								//Add this bundle to the itent
 								myIntent.putExtras(bundle);
 								PEMainScreen.this.startActivity(myIntent);
