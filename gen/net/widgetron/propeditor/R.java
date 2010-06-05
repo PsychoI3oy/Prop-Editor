@@ -14,15 +14,17 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
+        public static final int CopyFromCard=0x7f060008;
+        public static final int CopyToCard=0x7f060007;
         public static final int DisclaimerBox=0x7f060005;
         public static final int PropList=0x7f060003;
         public static final int TableLayout01=0x7f060000;
-        public static final int add=0x7f060007;
+        public static final int add=0x7f060009;
         public static final int instructions=0x7f060006;
-        public static final int merge=0x7f060008;
+        public static final int merge=0x7f06000a;
         public static final int open=0x7f060004;
-        public static final int save=0x7f06000a;
-        public static final int save_as=0x7f060009;
+        public static final int save=0x7f06000c;
+        public static final int save_as=0x7f06000b;
         public static final int text_prop=0x7f060001;
         public static final int text_val=0x7f060002;
     }
