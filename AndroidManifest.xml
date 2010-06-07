@@ -23,6 +23,6 @@
 			</intent-filter>
 		</activity>
 	</application>
-    <uses-sdk android:targetSdkVersion="3" android:minSdkVersion="3"/>
+    <uses-sdk android:targetSdkVersion="4" android:minSdkVersion="4"/>
 
 </manifest> 
