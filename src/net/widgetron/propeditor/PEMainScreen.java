@@ -1,5 +1,6 @@
 package net.widgetron.propeditor;
 
+import java.io.DataOutputStream;
 import java.io.File;
 
 import android.app.Activity; 
@@ -75,11 +76,20 @@ public class PEMainScreen extends Activity{
 		int returncode = 0;
 		try{
 			Log.d(TAG, "Root-Command ==> su -c \""+command+"\"");
-			Process p = rt.exec("su -c "+command);
+			Process p = rt.exec("su -c sh");
+
+			//kanged from http://christophe.vandeplas.com/2010/01/09/change-files-readonly-filesystem-your-android-phone
+			DataOutputStream os = new DataOutputStream(p.getOutputStream());
+			os.writeBytes(command + "\n"); os.flush();
+			// and finally close the shell
+			os.writeBytes("exit\n"); os.flush();
+			//end kangage
+			
 			returncode = p.waitFor();
 			if (returncode == 0) {
 				return true;
 			}else{
+				Log.d(TAG, "root command: " + command + " failed with returncode "+ returncode);
 				return false;
 			}
 		}catch(Exception e){
