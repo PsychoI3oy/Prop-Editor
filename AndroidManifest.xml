@@ -14,6 +14,11 @@
 				<data android:mimeType="text/plain" />
 			</intent-filter>
 		</activity>
+		<activity android:name="AndroidFileBrowser">
+			<intent-filter android:label="@string/resolve_edit">
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 		<activity android:name="PEEditScreen">
 			<intent-filter android:label="@string/resolve_edit">
 				<action android:name="android.intent.action.VIEW" />

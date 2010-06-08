@@ -2,9 +2,12 @@ package net.widgetron.propeditor;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity; 
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.content.*;
 import android.os.Bundle; 
 import android.util.Log;
@@ -105,45 +108,13 @@ public class PEMainScreen extends Activity{
 	
 	class openListener implements OnClickListener{
 	@Override
-	public void onClick(View v) {
-		CharSequence message = "Enter path of .prop file to edit";
-		final EditText input = new EditText(PEMainScreen.this);
-		input.setText(sdDir , TextView.BufferType.EDITABLE);
-		
-		new AlertDialog.Builder(PEMainScreen.this).setTitle("Enter Filename").setMessage(message ).setView(
-				input).setPositiveButton(android.R.string.ok , new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						
-						String pFileName = input.getText().toString();
-						
-						boolean isProp = (pFileName.substring(pFileName.lastIndexOf('.')+1, pFileName.length()).equals("prop"));
-						File propFile = new File (pFileName);
-						
-						if( isProp && propFile.canRead() ){
-							try{
-								Intent myIntent = new Intent(PEMainScreen.this, PEEditScreen.class);
-								Bundle bundle = new Bundle();
-								//Add the parameters to bundle as
-								bundle.putString("fn",pFileName);
-								//Add this bundle to the itent
-								myIntent.putExtras(bundle);
-								PEMainScreen.this.startActivity(myIntent);
-							}catch(Exception e){
-								android.util.Log.d(TAG, "OHSHI--", e);
-								propFileFail();
-							}
-
-						}else{
-							propFileFail();
-						}
-					}
-				}).setNegativeButton(android.R.string.cancel , new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						// Do nothing.
-					}
-				}).show();
+		public void onClick(View v) {
+		Intent myIntent = new Intent(PEMainScreen.this, AndroidFileBrowser.class);
+		PEMainScreen.this.startActivity(myIntent);
 		}
 	}
+	
+	
 	class copyListener implements OnClickListener{
 		@Override
 		public void onClick(View v) {
@@ -185,11 +156,5 @@ public class PEMainScreen extends Activity{
 				}
 			}
 		}
-	}
-
-	
-	
-	
-	
-	
+	}	
 }
