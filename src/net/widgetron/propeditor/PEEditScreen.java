@@ -15,10 +15,11 @@ public class PEEditScreen extends Activity {
 	private final String TAG = "PropEditor:EditScreen";
 	
 	
-	
+	private Runtime rt;
 	static PropEditor pE;
 	
-	private String filename;
+	private String workingfilename;
+	private String originalFileName;
 	private ListView propList;
 	
 	private String currProp;
@@ -28,7 +29,7 @@ public class PEEditScreen extends Activity {
 	protected String selectedEdit;
 	private String[] sugFullList;
 
-	
+	private String sdDir = "/propeditor/";
 	
 /** Called when the activity is first created. */ 
 	@Override 
@@ -37,20 +38,31 @@ public class PEEditScreen extends Activity {
 		/* Make this application use  
 		* the editor.xml-layout-file. */ 
 		this.setContentView(R.layout.editor); 
-	    
+		
 		propList = (ListView)findViewById(R.id.PropList);
 	    
 		Bundle bundle = getIntent().getExtras();
 
 		//Next extract the values using the key as
-		this.filename  = bundle.getString("fn");
+		this.originalFileName  = bundle.getString("fn");
 		//open suggestionfile
 		InputStream is = this.getResources().openRawResource(R.raw.suggestionfile);
 		BufferedReader sFile= new BufferedReader(new InputStreamReader(is));
-	  
+		this.rt = Runtime.getRuntime();
+		this.sdDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + sdDir;
+		workingfilename = sdDir + "tmp.prop";
+		if (originalFileName.startsWith("/system/")){
+		
+			suCommand("cp " + originalFileName + " " + workingfilename);
+		}else{
+			workingfilename = originalFileName;
+		}
+		
+		
+		
 		BufferedReader pFile;
 		try {
-			pFile = new BufferedReader(new InputStreamReader(new FileInputStream(this.filename)));
+			pFile = new BufferedReader(new InputStreamReader(new FileInputStream(this.workingfilename)));
 			PEEditScreen.pE = new PropEditor(pFile, sFile); 
 		} catch (FileNotFoundException e) {
 			Toast.makeText(getApplicationContext(), "Failed to open PropFile", Toast.LENGTH_SHORT).show();
@@ -80,16 +92,7 @@ public class PEEditScreen extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.save:
-			try {
-				if (pE.getPropFile().saveFile(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename)))) ){
-					saveFileSuccess();
-				}else{
-					saveFileFail();
-				}
-			} catch (FileNotFoundException e) {
-				android.util.Log.e(TAG, "failed to save file", e);
-				saveFileFail();
-			}
+			saveFile();
 			return true;
 		case R.id.add:
 			addProp();
@@ -164,6 +167,39 @@ public class PEEditScreen extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
+  	public void saveFile(){
+  		if (workingfilename == originalFileName){
+	  		try {
+				if (pE.getPropFile().saveFile(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(workingfilename)))) ){
+					saveFileSuccess();
+				}else{
+					saveFileFail();
+				}
+			} catch (FileNotFoundException e) {
+				android.util.Log.e(TAG, "failed to save file", e);
+				saveFileFail();
+			}
+		}else{
+			try {
+				if (pE.getPropFile().saveFile(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(workingfilename)))) ){
+					if (! suCommand("busybox mount -o rw,remount /system")){
+						Toast.makeText(getApplicationContext(), "failed to remount system rw", Toast.LENGTH_SHORT).show();
+					}else{
+						if (! suCommand("cp " + workingfilename + " " + originalFileName)){
+							suCommand("busybox mount -o ro,remount /system");
+							Toast.makeText(getApplicationContext(), "failed to copy working copy to system", Toast.LENGTH_SHORT).show();
+						}else{
+							suCommand("busybox mount -o ro,remount /system");
+							Toast.makeText(getApplicationContext(), "Saved " + originalFileName + " to /system; reboot for changes to take effect", Toast.LENGTH_LONG).show();
+						}
+					}
+				}
+			} catch (Exception e) {
+				android.util.Log.e(TAG, "failed to save file", e);
+				saveFileFail();
+			}
+		}
+  	}
   	
   	public void saveAs() {
 		CharSequence message = "Enter filename to save as";
@@ -258,6 +294,51 @@ public class PEEditScreen extends Activity {
 					}
 				}).show();
 		
+		
+	}
+	 public boolean hasRootPermission() {
+	        boolean rooted = true;
+	                try {
+	                        File su = new File("/system/bin/su");
+	                        if (su.exists() == false) {
+	                                su = new File("/system/xbin/su");
+	                                if (su.exists() == false) {
+	                                        rooted = false;
+	                                }
+	                        }
+	                } catch (Exception e) {
+	                        Log.d(TAG, "Can't obtain root - Here is what I know: "+e.getMessage());
+	                        rooted = false;
+	                }
+	                return rooted;
+	}
+	    
+
+	public boolean suCommand(String command) {
+		int returncode = -1;
+		try{
+			Log.d(TAG, "Root-Command ==> su -c \""+command+"\"");
+			
+			Process p = rt.exec("su -c sh");
+
+			//kanged from http://christophe.vandeplas.com/2010/01/09/change-files-readonly-filesystem-your-android-phone
+			DataOutputStream os = new DataOutputStream(p.getOutputStream());
+			os.writeBytes(command + "\n"); os.flush();
+			// and finally close the shell
+			os.writeBytes("exit\n"); os.flush();
+			//end kangage
+			
+			returncode = p.waitFor();
+			if (returncode == 0) {
+				return true;
+			}else{
+				Log.d(TAG, "root command: " + command + " failed with returncode "+ returncode);
+				return false;
+			}
+		}catch(Exception e){
+			Log.d(TAG, "Root-Command error, return code: " + returncode, e);
+			return false;
+		}
 		
 	}
 	class ModHandler implements OnItemClickListener{

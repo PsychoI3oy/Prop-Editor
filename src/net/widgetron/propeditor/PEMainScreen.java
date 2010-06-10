@@ -2,12 +2,7 @@ package net.widgetron.propeditor;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity; 
-import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.*;
 import android.os.Bundle; 
 import android.util.Log;
@@ -37,9 +32,9 @@ public class PEMainScreen extends Activity{
 		this.restoreButton = (Button)findViewById(R.id.CopyFromCard);
 		
 		if(hasRootPermission()){
-			suCommand("");
-			this.copyButton.setText("Copy /system/*.prop to " + sdDir);
-			this.restoreButton.setText("Copy " + sdDir +"*.prop  to /system/");
+			suCommand("mkdir "+sdDir);
+			this.copyButton.setText("Backup /system/*.prop to " + sdDir);
+			this.restoreButton.setText("Restore " + sdDir +"*.prop  to /system/");
 			this.copyButton.setOnClickListener(new copyListener());
 			this.restoreButton.setOnClickListener(new restoreListener());
 		}else{
@@ -76,7 +71,7 @@ public class PEMainScreen extends Activity{
 	    
 
 	public boolean suCommand(String command) {
-		int returncode = 0;
+		int returncode = -1;
 		try{
 			Log.d(TAG, "Root-Command ==> su -c \""+command+"\"");
 			Process p = rt.exec("su -c sh");
@@ -133,7 +128,7 @@ public class PEMainScreen extends Activity{
 			
 			if (pEdir.canWrite() && pEdir.isDirectory() ) {
 				if(suCommand("cp /system/*.prop "+ sdDir)){
-					Toast.makeText(getApplicationContext(), "Coped propfiles to " + sdDir, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Backed up propfiles to " + sdDir, Toast.LENGTH_SHORT).show();
 				}else{
 					Toast.makeText(getApplicationContext(), "Failed to copy PropFiles to "+ sdDir, Toast.LENGTH_SHORT).show();
 				}
@@ -149,10 +144,11 @@ public class PEMainScreen extends Activity{
 				Toast.makeText(getApplicationContext(), "failed to remount system rw", Toast.LENGTH_SHORT).show();
 			}else{
 				if (! suCommand("cp " + sdDir+"*.prop /system/")){
+					suCommand("busybox mount -o ro,remount /system");
 					Toast.makeText(getApplicationContext(), "failed to copy "+sdDir, Toast.LENGTH_SHORT).show();
 				}else{
 					suCommand("busybox mount -o ro,remount /system");
-					Toast.makeText(getApplicationContext(), "Copied  " + sdDir + "*.prop to /system; reboot for changes to take effect", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "Restored  " + sdDir + "*.prop to /system; reboot for changes to take effect", Toast.LENGTH_LONG).show();
 				}
 			}
 		}

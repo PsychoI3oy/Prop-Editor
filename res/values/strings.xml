@@ -2,7 +2,7 @@
 <resources>
     
     <string name="app_name">Prop Editor</string>
-    <string name="app_ver">0.2</string>
+    <string name="app_ver">0.3</string>
 <string name="copyleft">Copyleft 2010 Evan Widger</string>
 <string name="disclaimer">This is highly experimental code, my first Android app, and not guaranteed to do anything right. Use at your own risk. Save a backup before editing and visually inspect any edited files.</string>
 <string name="resolve_edit">Prop Editor</string>
