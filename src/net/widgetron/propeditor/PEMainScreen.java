@@ -37,7 +37,7 @@ public class PEMainScreen extends Activity{
 		this.restoreButton = (Button)findViewById(R.id.CopyFromCard);
 		
 		if(hasRootPermission()){
-			suCommand("mkdir " + sdDir);
+			suCommand("");
 			this.copyButton.setText("Copy /system/*.prop to " + sdDir);
 			this.restoreButton.setText("Copy " + sdDir +"*.prop  to /system/");
 			this.copyButton.setOnClickListener(new copyListener());
